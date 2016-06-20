@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Localoose - Javascript LocalStorage ODM</title>
+	</head>
+	<body>
+
+        <h1>Localoose - Javascript LocalStorage ODM</h1>
+
+        <script src="../dist/localoose.js"></script>
+
+		<script>
+
+            var localoose = new Localoose();
+
+            var user_schema = localoose.Schema({
+                name: String,
+                address: {
+                    type: String,
+                    required: true
+                },
+                birthday: {
+                    type: Date,
+                    default: 'Not declared',
+                    required: false
+                },
+                gifts: {
+                    type: Number,
+                    min: [3, 'Message if min must be invalid'],
+                    max: [10, 'Message if max must be invalid']
+                }
+            });
+
+            var user_model = localoose.Model('User', user_schema);
+
+            var User = new user_model({
+                name: 'Matheus Lugon',
+                address: 'SP, Brasil',
+                birthday: new Date(1996, 4, 20),
+                gifts: 5
+            });
+
+		</script>
+
+	</body>
+</html>
