@@ -1,17 +1,25 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>Localoose - Javascript LocalStorage ODM</title>
+		<title>Localoose - Simple Javascript LocalStorage ODM</title>
 	</head>
 	<body>
 
-        <h1>Localoose - Javascript LocalStorage ODM</h1>
+        <h1>Localoose - Simple Javascript LocalStorage ODM</h1>
 
         <script src="../dist/localoose.js"></script>
 
 		<script>
 
             var localoose = new Localoose();
+
+            localoose.DEFAULT_ERROR_MESSAGES = {
+                invalidProperty: "",
+                invalidType: "",
+                required: "",
+                min: "",
+                max: ""
+            };
 
             var user_schema = localoose.Schema({
                 name: String,
@@ -21,24 +29,30 @@
                 },
                 birthday: {
                     type: Date,
-                    default: 'Not declared',
-                    required: false
+                    default: 'Not declared'
                 },
                 gifts: {
                     type: Number,
-                    min: [3, 'Message if min must be invalid'],
+                    min: 3,
                     max: [10, 'Message if max must be invalid']
+                },
+                active: {
+                    type: Boolean,
+                    required: true,
+                    default: false
                 }
             });
 
             var user_model = localoose.Model('User', user_schema);
 
             var User = new user_model({
-                name: 'Matheus Lugon',
-                address: 'SP, Brasil',
+                name: 'John',
+                address: 'NY, United States',
                 birthday: new Date(1996, 4, 20),
-                gifts: 5
+                gifts: 3,
             });
+
+            User.save();
 
 		</script>
 

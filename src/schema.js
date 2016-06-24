@@ -1,5 +1,6 @@
 import { validateTypes } from './schemaTypes';
 import { validateValidators } from './validators';
+import { is } from './is';
 
 /**
  * @class Schema
@@ -21,7 +22,7 @@ export default class Schema {
      * @param  {Object} schema
      */
     static validate( schema ) {
-        if ( typeof schema !== 'object' ) {
+        if ( !is.Object(schema) ) {
             throw TypeError(`Invalid. Schema must be object`);
         } else if ( !schema ) {
             throw Error(`Invalid Schema`);

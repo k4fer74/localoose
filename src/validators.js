@@ -1,9 +1,11 @@
+import { is } from './is';
+
 /**
  * All validators supported
  * @type {Array}
  */
 export const VALIDATORS = [
-    'required', 'min', 'max', 'default'
+    'type', 'required', 'min', 'max', 'default'
 ];
 
 /**
@@ -13,18 +15,17 @@ export const validateValidators = schema => {
     hasRequired( schema );
     hasMinMax( schema );
     hasDefault( schema );
+    checkInvalidProperties( schema );
 }
 
 /**
- * [hasRequired description]
- * @param  {[type]} schema [description]
- * @return {[type]}        [description]
+ * Check if schema have 'required' property
  */
 const hasRequired = schema => {
     let required_type = 'Boolean';
     for ( let prop in schema ) {
         let required_prop = schema[prop].required;
-        if ( typeof required_prop !== 'undefined' ) {
+        if ( !is.Undefined(required_prop) ) {
             let required_prop_value = required_prop.constructor.name;
             if ( required_prop_value !== required_type ) {
                 throw TypeError(`${required_prop_value} is not a Boolean. Use: 'true' or 'false'`);
@@ -34,9 +35,7 @@ const hasRequired = schema => {
 }
 
 /**
- * [hasMinMax description]
- * @param  {[type]} schema [description]
- * @return {[type]}        [description]
+ * Check if schema have 'min' and/or 'max' properties
  */
 const hasMinMax = schema => {
     for ( let prop in schema ) {
@@ -44,11 +43,11 @@ const hasMinMax = schema => {
         let min_prop = schema[prop].min;
         let max_prop = schema[prop].max;
 
-        if ( typeof min_prop !== 'undefined' ) {
+        if ( !is.Undefined(min_prop) ) {
             validateMinMax('min', min_prop);
         }
 
-        if ( typeof max_prop !== 'undefined' ) {
+        if ( !is.Undefined(max_prop) ) {
             validateMinMax('max', max_prop);
         }
 
@@ -56,29 +55,44 @@ const hasMinMax = schema => {
 }
 
 /**
- * [validateMinMax description]
- * @param  {[type]} prop [description]
- * @return {[type]}      [description]
+ * Validate properties 'min' and 'max'
+ * @param {String} name
+ * @oaran {String} prop
  */
 const validateMinMax = (name, prop) => {
 
-    if ( Array.isArray(prop) ) {
+    if ( is.Array(prop) ) {
 
         let amount  = prop[0];
         let message = prop[1];
 
-        if ( typeof amount == 'undefined' || typeof amount !== 'number' ) {
+        if ( is.Undefined(amount) || !is.Number(amount) ) {
             throw TypeError(`Invalid first index (number) from '${name}' property. Must be Number.`)
         }
 
-        if ( typeof message !== 'undefined' && typeof message !== 'string' ) {
+        if ( !is.Undefined(message) && !is.String(message) ) {
             throw TypeError(`Invalid second index (message) from '${name}' property. Must be String.`)
         }
 
-    } else if ( typeof prop !== 'number' ) {
+    } else if ( !is.Number(prop) ) {
         throw TypeError(`Invalid value to '${name}' property. Use: Number or Array.`)
     }
 
+}
+
+/**
+ * Validate if the property has invalid properties
+ */
+const checkInvalidProperties = schema => {
+    for ( let schema_prop in schema ) {
+        if ( is.Object(schema[schema_prop]) ) {
+            for ( let prop_from_shema_prop in schema[schema_prop] ) {
+                if ( VALIDATORS.indexOf(prop_from_shema_prop) === -1 ) {
+                    throw Error(`Invalid property '${prop_from_shema_prop}' in Schema`);
+                }
+            }
+        }
+    }
 }
 
 /**
