@@ -96,20 +96,17 @@ Example with all types:
 
 ```javascript
 localoose.Schema({
-    field: {
+    name: {
         type: String,
         required: true
     },
-    field: {
+    age: {
         type: Number,
         min: [1, "The minimum is one!"]
     },
-    field: Date,
-    field: {
-        type: Boolean,
-        max: [4, "The maximum is four!]
-    },
-    field: {
+    birthday: Date,
+    haveDog: Boolean,
+    brothers: {
         type: Array,
         default: [""]
     }
