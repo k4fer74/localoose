@@ -1,5 +1,6 @@
 # Localoose
 Localoose is a simple localStorage Object Data Mapping (ODM)
+**-> Still under development**
 
 ## Installation
 ### Install with npm
@@ -12,13 +13,13 @@ npm install <package>
 ```
 # Overview
 
-## Get started
+## Getting started
 ```javascript
 var localoose = new Localoose();
 ```
 
 ## Defining a Schema
-We define schema like that `localoose.Schema();`
+We define schema like this `localoose.Schema();`
 
 Example:
 
@@ -34,7 +35,7 @@ var MySchema = localoose.Schema({
 ```
 
 ## Defining a Model
-We define model like that `localoose.Model('ModelName', MySchema);`
+We define model like this `localoose.Model('ModelName', MySchema);`
 
 Example
 
@@ -52,16 +53,71 @@ var instance = new MyModel({
     age: 22
 });
 ```
-
+# Doc
 ## Schema Types
-| Type  | Supported values  | Default value  |
-|---|---|---|
-| Required  | Boolean  | False  |
-| Min  | Number  | Null  |
-| Max  | Number  | Null  |
-| Default | Not empty value  | Null  |
+`String`, `Number`, `Date`, `Boolean` and `Array`
+
+Example:
+
+```javascript
+localoose.Schema({
+    field: String,
+    field: Number,
+    field: Date,
+    field: {
+        type: Boolean
+    },
+    field: {
+        type: Array
+    }
+});
+```
+
+## Schema Validator Types
+| Type  | Supported values  | Default value  | Description |
+|---|---|---|----|
+| Required  | Boolean  | False  | Validate field as required |
+| Min  | Number or Array  | Null  | Validate a minimum value for the field |
+| Max  | Number or Array  | Null  | Validate a maximum value for the field |
+| Default | Not empty value  | Null  | When the field is empty or null, then apply the default value |
+
+> **Note:** The types 'min' and 'max' can be **number** or **array**. If array or number, look:
+```javascript
+localoose.Schema({
+    field: {
+        min: [3, "Message if be invalid"],
+        max: 6 // Note: this not have a invalid custom message
+    }
+});
+```
+
+Example with all types:
+
+
+```javascript
+localoose.Schema({
+    field: {
+        type: String,
+        required: true
+    },
+    field: {
+        type: Number,
+        min: [1, "The minimum is one!"]
+    },
+    field: Date,
+    field: {
+        type: Boolean,
+        max: [4, "The maximum is four!]
+    },
+    field: {
+        type: Array,
+        default: [""]
+    }
+});
+```
 
 ## Methods
+> None have been implemented
 
 ### find();
 
