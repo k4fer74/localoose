@@ -13,14 +13,6 @@
 
             var localoose = new Localoose();
 
-            localoose.DEFAULT_ERROR_MESSAGES = {
-                invalidProperty: "",
-                invalidType: "",
-                required: "",
-                min: "",
-                max: ""
-            };
-
             var user_schema = localoose.Schema({
                 name: String,
                 address: {
@@ -52,7 +44,6 @@
                 gifts: 3,
             });
 
-            User.save();
 
 		</script>
 
