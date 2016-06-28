@@ -114,7 +114,18 @@ localoose.Schema({
 ```
 
 ## Methods
-> None have been implemented
+
+### save();
+Persists the model on localStorage
+
+```javascript
+MyModel.save(function( err, my_model ) {
+    if ( err )
+        console.log(err);
+    else
+        console.info('Saved!', my_model);    
+});
+```
 
 ### find();
 
