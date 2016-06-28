@@ -8,11 +8,17 @@ import ObjectId from './objectId';
 export default class Query {
 
     /**
-     * @param  {String} table `Table` name to storage data
+     * @param  {String} table_name `Table` name to storage data
      * @param  {Object} data  Object data to persist
      */
-    static save( table, data ) {
-        console.info("SAVED!");
+    static save( table_name, data ) {
+        if ( !LocalStorage.tableExists(table_name) ) {
+            LocalStorage.newTable(table_name, data);
+        } else {
+            /**
+             * The table exists, then PUSH data into table
+             */
+        }
     }
 
 }
