@@ -38,10 +38,15 @@
             var user_model = localoose.Model('User', user_schema);
 
             var User = new user_model({
-                name: 'John',
+                name: 'John Snow',
                 address: 'NY, United States',
                 birthday: new Date(1996, 4, 20),
                 gifts: 3,
+            });
+
+            User.save(function( err, user ) {
+                if ( err )
+                    console.log(err)
             });
 
 
