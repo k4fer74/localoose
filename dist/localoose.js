@@ -145,7 +145,7 @@
 
 	var _query2 = _interopRequireDefault(_query);
 
-	var _validators = __webpack_require__(5);
+	var _genericValidations = __webpack_require__(10);
 
 	var _is = __webpack_require__(4);
 
@@ -185,123 +185,20 @@
 	    _createClass(Model, [{
 	        key: 'save',
 	        value: function save(callback) {
-	            this.validateModel();
-	            //Query.save(this.model_name, this.model_data);
-	        }
-	    }, {
-	        key: 'validateModel',
-	        value: function validateModel() {
-	            var model = arguments.length <= 0 || arguments[0] === undefined ? this.model_data : arguments[0];
-	            var schema = arguments.length <= 1 || arguments[1] === undefined ? this.schema : arguments[1];
+	            var validate_errors = (0, _genericValidations.validateModel)(this.model_data, this.schema);
 
-
-	            var validators = _validators.VALIDATORS,
-	                errors = [];
-
-	            /**
-	             * Validate properties from model
-	             */
-	            for (var prop_model in model) {
-	                if (!schema.hasOwnProperty(prop_model)) {
-	                    errors.push(prop_model + ' is not a valid property in your Model');
-	                }
+	            if (validate_errors.length > 0) {
+	                callback(validate_errors);
+	            } else {
+	                /**
+	                 * Save the model
+	                 */
+	                _query2.default.save(this.model_name, this.model_data);
+	                /**
+	                 * Update callback
+	                 */
+	                callback(null, this.model_data);
 	            }
-
-	            for (var prop_schema in schema) {
-	                if (model.hasOwnProperty(prop_schema)) {
-	                    var prop_type = schema[prop_schema].type;
-	                    if (!_is.is.Undefined(prop_type)) {
-
-	                        if (model[prop_schema].constructor.name !== prop_type.name) {
-	                            errors.push(prop_schema + ' is not a ' + prop_type.name);
-	                        }
-
-	                        var _iteratorNormalCompletion = true;
-	                        var _didIteratorError = false;
-	                        var _iteratorError = undefined;
-
-	                        try {
-	                            for (var _iterator = validators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                                var validator = _step.value;
-
-	                                var prop_validator = schema[prop_schema][validator];
-	                                if (!_is.is.Undefined(prop_validator)) {
-	                                    switch (validator) {
-	                                        case 'required':
-	                                            if (_is.is.Empty(model[prop_schema]) || _is.is.Null(model[prop_schema])) {
-	                                                errors.push(prop_schema + ' not be empty or null');
-	                                            }
-	                                            break;
-
-	                                        case 'min':
-	                                            if (_is.is.Array(prop_validator)) {
-	                                                if (model[prop_schema] < prop_validator[0]) {
-	                                                    if (!_is.is.Undefined(prop_validator[1])) {
-	                                                        errors.push('' + prop_validator[1]);
-	                                                    } else {
-	                                                        errors.push(prop_schema + ' not be less than ' + prop_validator[0]);
-	                                                    }
-	                                                }
-	                                            } else {
-	                                                if (model[prop_schema] < prop_validator) {
-	                                                    errors.push(prop_schema + ' not be less than ' + prop_validator);
-	                                                }
-	                                            }
-	                                            break;
-
-	                                        case 'max':
-	                                            if (_is.is.Array(prop_validator)) {
-	                                                if (model[prop_schema] > prop_validator[0]) {
-	                                                    if (!_is.is.Undefined(prop_validator[1])) {
-	                                                        errors.push('' + prop_validator[1]);
-	                                                    } else {
-	                                                        errors.push(prop_schema + ' not be grater than ' + prop_validator[0]);
-	                                                    }
-	                                                }
-	                                            } else {
-	                                                if (model[prop_schema] > prop_validator) {
-	                                                    errors.push(prop_schema + ' not be less grater ' + prop_validator);
-	                                                }
-	                                            }
-	                                            break;
-
-	                                    }
-	                                }
-	                            }
-	                        } catch (err) {
-	                            _didIteratorError = true;
-	                            _iteratorError = err;
-	                        } finally {
-	                            try {
-	                                if (!_iteratorNormalCompletion && _iterator.return) {
-	                                    _iterator.return();
-	                                }
-	                            } finally {
-	                                if (_didIteratorError) {
-	                                    throw _iteratorError;
-	                                }
-	                            }
-	                        }
-	                    } else {
-
-	                        if (model[prop_schema].constructor.name !== schema[prop_schema].name) {
-	                            errors.push(prop_schema + ' is not a ' + schema[prop_schema].name);
-	                        }
-	                    }
-	                } else {
-
-	                    var default_value = schema[prop_schema].default;
-
-	                    if (!_is.is.Undefined(default_value)) {
-	                        model[prop_schema] = default_value;
-	                    } else {
-	                        model[prop_schema] = null;
-	                    }
-	                }
-	            }
-
-	            console.log(errors);
-	            console.log(model);
 	        }
 	    }], [{
 	        key: 'initialize',
@@ -598,7 +495,7 @@
 	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -607,7 +504,7 @@
 
 	var _localStorage2 = _interopRequireDefault(_localStorage);
 
-	var _objectId = __webpack_require__(8);
+	var _objectId = __webpack_require__(9);
 
 	var _objectId2 = _interopRequireDefault(_objectId);
 
@@ -621,41 +518,49 @@
 	 */
 
 	var Query = function () {
-	  function Query() {
-	    _classCallCheck(this, Query);
-	  }
-
-	  _createClass(Query, null, [{
-	    key: 'save',
-
-
-	    /**
-	     * @param  {String} table `Table` name to storage data
-	     * @param  {Object} data  Object data to persist
-	     */
-	    value: function save(table, data) {
-	      console.info("SAVED!");
+	    function Query() {
+	        _classCallCheck(this, Query);
 	    }
-	  }]);
 
-	  return Query;
+	    _createClass(Query, null, [{
+	        key: 'save',
+
+
+	        /**
+	         * @param  {String} table_name `Table` name to storage data
+	         * @param  {Object} data  Object data to persist
+	         */
+	        value: function save(table_name, data) {
+	            if (!_localStorage2.default.tableExists(table_name)) {
+	                _localStorage2.default.newTable(table_name, data);
+	            } else {
+	                /**
+	                 * The table exists, then PUSH data into table
+	                 */
+	            }
+	        }
+	    }]);
+
+	    return Query;
 	}();
 
 	exports.default = Query;
 
 /***/ },
 /* 7 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
-	  value: true
+	    value: true
 	});
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var pluralize = __webpack_require__(8);
 
 	/**
 	 * @class LocalStorage
@@ -663,53 +568,555 @@
 	 */
 
 	var LocalStorage = function () {
-	  function LocalStorage() {
-	    _classCallCheck(this, LocalStorage);
-	  }
-
-	  _createClass(LocalStorage, null, [{
-	    key: "newTable",
-
-
-	    /**
-	     * Create a new table if not exists
-	     * @param  {String} table_name
-	     */
-	    value: function newTable(table_name) {
-	      if (localStorage.getItem(table_name) === null) {}
+	    function LocalStorage() {
+	        _classCallCheck(this, LocalStorage);
 	    }
 
-	    /**
-	     * Get all data from table
-	     * @param  {String} table_name
-	     * @return {Array}
-	     */
+	    _createClass(LocalStorage, null, [{
+	        key: "newTable",
 
-	  }, {
-	    key: "get",
-	    value: function get(table_name) {}
 
-	    /**
-	     * [set description]
-	     * @param {[type]} table_name [description]
-	     * @param {[type]} data       [description]
-	     */
+	        /**
+	         * Create a new table if not exists
+	         * @param  {String} table_name
+	         * @param  {Object} initial_data when create a new table,
+	         * if exists a data, then save the data
+	         */
+	        value: function newTable(table_name, initial_data) {
+	            /**
+	             * Pluralize table_name
+	             * @example
+	             * User = Users
+	             *
+	             * @type {String}
+	             */
+	            table_name = pluralize(table_name);
 
-	  }, {
-	    key: "set",
-	    value: function set(table_name, data) {}
-	  }, {
-	    key: "push",
-	    value: function push(table_name, data) {}
-	  }]);
+	            if (localStorage.getItem(table_name) === null) {
+	                /**
+	                 * Create a new item on storage
+	                 * with a empty value
+	                 */
+	                if (initial_data) {
+	                    localStorage.setItem(table_name, JSON.stringify([initial_data]));
+	                } else {
+	                    localStorage.setItem(table_name, "");
+	                }
+	            }
+	        }
 
-	  return LocalStorage;
+	        /**
+	         * Returns if the table by name exists
+	         * @param  {String} table_name
+	         * @return {Boolean}
+	         */
+
+	    }, {
+	        key: "tableExists",
+	        value: function tableExists(table_name) {
+	            table_name = pluralize(table_name);
+	            return localStorage.getItem(table_name) === null ? false : true;
+	        }
+
+	        /**
+	         * Get all data from table
+	         * @param  {String} table_name
+	         * @return {Array|String|Number|...}
+	         */
+
+	    }, {
+	        key: "get",
+	        value: function get(table_name) {
+	            table_name = pluralize(table_name);
+	            return localStorage.getItem(table_name);
+	        }
+
+	        /**
+	         * Set a initial value to table
+	         * @param {String} table_name
+	         * @param {Object} data       Object to stringify
+	         */
+
+	    }, {
+	        key: "set",
+	        value: function set(table_name, data) {
+	            table_name = pluralize(table_name);
+	            localStorage.setItem(table_name, JSON.stringify([data]));
+	        }
+	    }, {
+	        key: "push",
+	        value: function push(table_name, data) {}
+	    }]);
+
+	    return LocalStorage;
 	}();
 
 	exports.default = LocalStorage;
 
 /***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* global define */
+
+	(function (root, pluralize) {
+	  /* istanbul ignore else */
+	  if (true) {
+	    // Node.
+	    module.exports = pluralize();
+	  } else if (typeof define === 'function' && define.amd) {
+	    // AMD, registers as an anonymous module.
+	    define(function () {
+	      return pluralize();
+	    });
+	  } else {
+	    // Browser global.
+	    root.pluralize = pluralize();
+	  }
+	})(this, function () {
+	  // Rule storage - pluralize and singularize need to be run sequentially,
+	  // while other rules can be optimized using an object for instant lookups.
+	  var pluralRules = [];
+	  var singularRules = [];
+	  var uncountables = {};
+	  var irregularPlurals = {};
+	  var irregularSingles = {};
+
+	  /**
+	   * Title case a string.
+	   *
+	   * @param  {string} str
+	   * @return {string}
+	   */
+	  function toTitleCase (str) {
+	    return str.charAt(0).toUpperCase() + str.substr(1).toLowerCase();
+	  }
+
+	  /**
+	   * Sanitize a pluralization rule to a usable regular expression.
+	   *
+	   * @param  {(RegExp|string)} rule
+	   * @return {RegExp}
+	   */
+	  function sanitizeRule (rule) {
+	    if (typeof rule === 'string') {
+	      return new RegExp('^' + rule + '$', 'i');
+	    }
+
+	    return rule;
+	  }
+
+	  /**
+	   * Pass in a word token to produce a function that can replicate the case on
+	   * another word.
+	   *
+	   * @param  {string}   word
+	   * @param  {string}   token
+	   * @return {Function}
+	   */
+	  function restoreCase (word, token) {
+	    // Upper cased words. E.g. "HELLO".
+	    if (word === word.toUpperCase()) {
+	      return token.toUpperCase();
+	    }
+
+	    // Title cased words. E.g. "Title".
+	    if (word[0] === word[0].toUpperCase()) {
+	      return toTitleCase(token);
+	    }
+
+	    // Lower cased words. E.g. "test".
+	    return token.toLowerCase();
+	  }
+
+	  /**
+	   * Interpolate a regexp string.
+	   *
+	   * @param  {string} str
+	   * @param  {Array}  args
+	   * @return {string}
+	   */
+	  function interpolate (str, args) {
+	    return str.replace(/\$(\d{1,2})/g, function (match, index) {
+	      return args[index] || '';
+	    });
+	  }
+
+	  /**
+	   * Sanitize a word by passing in the word and sanitization rules.
+	   *
+	   * @param  {String}   token
+	   * @param  {String}   word
+	   * @param  {Array}    collection
+	   * @return {String}
+	   */
+	  function sanitizeWord (token, word, collection) {
+	    // Empty string or doesn't need fixing.
+	    if (!token.length || uncountables.hasOwnProperty(token)) {
+	      return word;
+	    }
+
+	    var len = collection.length;
+
+	    // Iterate over the sanitization rules and use the first one to match.
+	    while (len--) {
+	      var rule = collection[len];
+
+	      // If the rule passes, return the replacement.
+	      if (rule[0].test(word)) {
+	        return word.replace(rule[0], function (match, index, word) {
+	          var result = interpolate(rule[1], arguments);
+
+	          if (match === '') {
+	            return restoreCase(word[index - 1], result);
+	          }
+
+	          return restoreCase(match, result);
+	        });
+	      }
+	    }
+
+	    return word;
+	  }
+
+	  /**
+	   * Replace a word with the updated word.
+	   *
+	   * @param  {Object}   replaceMap
+	   * @param  {Object}   keepMap
+	   * @param  {Array}    rules
+	   * @return {Function}
+	   */
+	  function replaceWord (replaceMap, keepMap, rules) {
+	    return function (word) {
+	      // Get the correct token and case restoration functions.
+	      var token = word.toLowerCase();
+
+	      // Check against the keep object map.
+	      if (keepMap.hasOwnProperty(token)) {
+	        return restoreCase(word, token);
+	      }
+
+	      // Check against the replacement map for a direct word replacement.
+	      if (replaceMap.hasOwnProperty(token)) {
+	        return restoreCase(word, replaceMap[token]);
+	      }
+
+	      // Run all the rules against the word.
+	      return sanitizeWord(token, word, rules);
+	    };
+	  }
+
+	  /**
+	   * Pluralize or singularize a word based on the passed in count.
+	   *
+	   * @param  {String}  word
+	   * @param  {Number}  count
+	   * @param  {Boolean} inclusive
+	   * @return {String}
+	   */
+	  function pluralize (word, count, inclusive) {
+	    var pluralized = count === 1
+	      ? pluralize.singular(word) : pluralize.plural(word);
+
+	    return (inclusive ? count + ' ' : '') + pluralized;
+	  }
+
+	  /**
+	   * Pluralize a word.
+	   *
+	   * @type {Function}
+	   */
+	  pluralize.plural = replaceWord(
+	    irregularSingles, irregularPlurals, pluralRules
+	  );
+
+	  /**
+	   * Singularize a word.
+	   *
+	   * @type {Function}
+	   */
+	  pluralize.singular = replaceWord(
+	    irregularPlurals, irregularSingles, singularRules
+	  );
+
+	  /**
+	   * Add a pluralization rule to the collection.
+	   *
+	   * @param {(string|RegExp)} rule
+	   * @param {string}          replacement
+	   */
+	  pluralize.addPluralRule = function (rule, replacement) {
+	    pluralRules.push([sanitizeRule(rule), replacement]);
+	  };
+
+	  /**
+	   * Add a singularization rule to the collection.
+	   *
+	   * @param {(string|RegExp)} rule
+	   * @param {string}          replacement
+	   */
+	  pluralize.addSingularRule = function (rule, replacement) {
+	    singularRules.push([sanitizeRule(rule), replacement]);
+	  };
+
+	  /**
+	   * Add an uncountable word rule.
+	   *
+	   * @param {(string|RegExp)} word
+	   */
+	  pluralize.addUncountableRule = function (word) {
+	    if (typeof word === 'string') {
+	      uncountables[word.toLowerCase()] = true;
+	      return;
+	    }
+
+	    // Set singular and plural references for the word.
+	    pluralize.addPluralRule(word, '$0');
+	    pluralize.addSingularRule(word, '$0');
+	  };
+
+	  /**
+	   * Add an irregular word definition.
+	   *
+	   * @param {String} single
+	   * @param {String} plural
+	   */
+	  pluralize.addIrregularRule = function (single, plural) {
+	    plural = plural.toLowerCase();
+	    single = single.toLowerCase();
+
+	    irregularSingles[single] = plural;
+	    irregularPlurals[plural] = single;
+	  };
+
+	  /**
+	   * Irregular rules.
+	   */
+	  [
+	    // Pronouns.
+	    ['I', 'we'],
+	    ['me', 'us'],
+	    ['he', 'they'],
+	    ['she', 'they'],
+	    ['them', 'them'],
+	    ['myself', 'ourselves'],
+	    ['yourself', 'yourselves'],
+	    ['itself', 'themselves'],
+	    ['herself', 'themselves'],
+	    ['himself', 'themselves'],
+	    ['themself', 'themselves'],
+	    ['is', 'are'],
+	    ['was', 'were'],
+	    ['has', 'have'],
+	    ['this', 'these'],
+	    ['that', 'those'],
+	    // Words ending in with a consonant and `o`.
+	    ['echo', 'echoes'],
+	    ['dingo', 'dingoes'],
+	    ['volcano', 'volcanoes'],
+	    ['tornado', 'tornadoes'],
+	    ['torpedo', 'torpedoes'],
+	    // Ends with `us`.
+	    ['genus', 'genera'],
+	    ['viscus', 'viscera'],
+	    // Ends with `ma`.
+	    ['stigma', 'stigmata'],
+	    ['stoma', 'stomata'],
+	    ['dogma', 'dogmata'],
+	    ['lemma', 'lemmata'],
+	    ['schema', 'schemata'],
+	    ['anathema', 'anathemata'],
+	    // Other irregular rules.
+	    ['ox', 'oxen'],
+	    ['axe', 'axes'],
+	    ['die', 'dice'],
+	    ['yes', 'yeses'],
+	    ['foot', 'feet'],
+	    ['eave', 'eaves'],
+	    ['goose', 'geese'],
+	    ['tooth', 'teeth'],
+	    ['quiz', 'quizzes'],
+	    ['human', 'humans'],
+	    ['proof', 'proofs'],
+	    ['carve', 'carves'],
+	    ['valve', 'valves'],
+	    ['looey', 'looies'],
+	    ['thief', 'thieves'],
+	    ['groove', 'grooves'],
+	    ['pickaxe', 'pickaxes'],
+	    ['whiskey', 'whiskies']
+	  ].forEach(function (rule) {
+	    return pluralize.addIrregularRule(rule[0], rule[1]);
+	  });
+
+	  /**
+	   * Pluralization rules.
+	   */
+	  [
+	    [/s?$/i, 's'],
+	    [/([^aeiou]ese)$/i, '$1'],
+	    [/(ax|test)is$/i, '$1es'],
+	    [/(alias|[^aou]us|tlas|gas|ris)$/i, '$1es'],
+	    [/(e[mn]u)s?$/i, '$1s'],
+	    [/([^l]ias|[aeiou]las|[emjzr]as|[iu]am)$/i, '$1'],
+	    [/(alumn|syllab|octop|vir|radi|nucle|fung|cact|stimul|termin|bacill|foc|uter|loc|strat)(?:us|i)$/i, '$1i'],
+	    [/(alumn|alg|vertebr)(?:a|ae)$/i, '$1ae'],
+	    [/(seraph|cherub)(?:im)?$/i, '$1im'],
+	    [/(her|at|gr)o$/i, '$1oes'],
+	    [/(agend|addend|millenni|dat|extrem|bacteri|desiderat|strat|candelabr|errat|ov|symposi|curricul|automat|quor)(?:a|um)$/i, '$1a'],
+	    [/(apheli|hyperbat|periheli|asyndet|noumen|phenomen|criteri|organ|prolegomen|hedr|automat)(?:a|on)$/i, '$1a'],
+	    [/sis$/i, 'ses'],
+	    [/(?:(kni|wi|li)fe|(ar|l|ea|eo|oa|hoo)f)$/i, '$1$2ves'],
+	    [/([^aeiouy]|qu)y$/i, '$1ies'],
+	    [/([^ch][ieo][ln])ey$/i, '$1ies'],
+	    [/(x|ch|ss|sh|zz)$/i, '$1es'],
+	    [/(matr|cod|mur|sil|vert|ind|append)(?:ix|ex)$/i, '$1ices'],
+	    [/(m|l)(?:ice|ouse)$/i, '$1ice'],
+	    [/(pe)(?:rson|ople)$/i, '$1ople'],
+	    [/(child)(?:ren)?$/i, '$1ren'],
+	    [/eaux$/i, '$0'],
+	    [/m[ae]n$/i, 'men'],
+	    ['thou', 'you']
+	  ].forEach(function (rule) {
+	    return pluralize.addPluralRule(rule[0], rule[1]);
+	  });
+
+	  /**
+	   * Singularization rules.
+	   */
+	  [
+	    [/s$/i, ''],
+	    [/(ss)$/i, '$1'],
+	    [/((a)naly|(b)a|(d)iagno|(p)arenthe|(p)rogno|(s)ynop|(t)he)(?:sis|ses)$/i, '$1sis'],
+	    [/(^analy)(?:sis|ses)$/i, '$1sis'],
+	    [/(wi|kni|(?:after|half|high|low|mid|non|night|[^\w]|^)li)ves$/i, '$1fe'],
+	    [/(ar|(?:wo|[ae])l|[eo][ao])ves$/i, '$1f'],
+	    [/ies$/i, 'y'],
+	    [/\b([pl]|zomb|(?:neck|cross)?t|coll|faer|food|gen|goon|group|lass|talk|goal|cut)ies$/i, '$1ie'],
+	    [/\b(mon|smil)ies$/i, '$1ey'],
+	    [/(m|l)ice$/i, '$1ouse'],
+	    [/(seraph|cherub)im$/i, '$1'],
+	    [/(x|ch|ss|sh|zz|tto|go|cho|alias|[^aou]us|tlas|gas|(?:her|at|gr)o|ris)(?:es)?$/i, '$1'],
+	    [/(e[mn]u)s?$/i, '$1'],
+	    [/(movie|twelve)s$/i, '$1'],
+	    [/(cris|test|diagnos)(?:is|es)$/i, '$1is'],
+	    [/(alumn|syllab|octop|vir|radi|nucle|fung|cact|stimul|termin|bacill|foc|uter|loc|strat)(?:us|i)$/i, '$1us'],
+	    [/(agend|addend|millenni|dat|extrem|bacteri|desiderat|strat|candelabr|errat|ov|symposi|curricul|quor)a$/i, '$1um'],
+	    [/(apheli|hyperbat|periheli|asyndet|noumen|phenomen|criteri|organ|prolegomen|hedr|automat)a$/i, '$1on'],
+	    [/(alumn|alg|vertebr)ae$/i, '$1a'],
+	    [/(cod|mur|sil|vert|ind)ices$/i, '$1ex'],
+	    [/(matr|append)ices$/i, '$1ix'],
+	    [/(pe)(rson|ople)$/i, '$1rson'],
+	    [/(child)ren$/i, '$1'],
+	    [/(eau)x?$/i, '$1'],
+	    [/men$/i, 'man']
+	  ].forEach(function (rule) {
+	    return pluralize.addSingularRule(rule[0], rule[1]);
+	  });
+
+	  /**
+	   * Uncountable rules.
+	   */
+	  [
+	    // Singular words with no plurals.
+	    'advice',
+	    'adulthood',
+	    'agenda',
+	    'aid',
+	    'alcohol',
+	    'ammo',
+	    'athletics',
+	    'bison',
+	    'blood',
+	    'bream',
+	    'buffalo',
+	    'butter',
+	    'carp',
+	    'cash',
+	    'chassis',
+	    'chess',
+	    'clothing',
+	    'commerce',
+	    'cod',
+	    'cooperation',
+	    'corps',
+	    'digestion',
+	    'debris',
+	    'diabetes',
+	    'energy',
+	    'equipment',
+	    'elk',
+	    'excretion',
+	    'expertise',
+	    'flounder',
+	    'fun',
+	    'gallows',
+	    'garbage',
+	    'graffiti',
+	    'headquarters',
+	    'health',
+	    'herpes',
+	    'highjinks',
+	    'homework',
+	    'housework',
+	    'information',
+	    'jeans',
+	    'justice',
+	    'kudos',
+	    'labour',
+	    'literature',
+	    'machinery',
+	    'mackerel',
+	    'mail',
+	    'media',
+	    'mews',
+	    'moose',
+	    'music',
+	    'news',
+	    'pike',
+	    'plankton',
+	    'pliers',
+	    'pollution',
+	    'premises',
+	    'rain',
+	    'research',
+	    'rice',
+	    'salmon',
+	    'scissors',
+	    'series',
+	    'sewage',
+	    'shambles',
+	    'shrimp',
+	    'species',
+	    'staff',
+	    'swine',
+	    'trout',
+	    'traffic',
+	    'transporation',
+	    'tuna',
+	    'wealth',
+	    'welfare',
+	    'whiting',
+	    'wildebeest',
+	    'wildlife',
+	    'you',
+	    // Regexes.
+	    /pox$/i, // "chickpox", "smallpox"
+	    /ois$/i,
+	    /deer$/i, // "deer", "reindeer"
+	    /fish$/i, // "fish", "blowfish", "angelfish"
+	    /sheep$/i,
+	    /measles$/i,
+	    /[^aeiou]ese$/i // "chinese", "japanese"
+	  ].forEach(pluralize.addUncountableRule);
+
+	  return pluralize;
+	});
+
+
+/***/ },
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -751,6 +1158,137 @@
 	}();
 
 	exports.default = ObjectId;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	    value: true
+	});
+	exports.validateModel = undefined;
+
+	var _validators = __webpack_require__(5);
+
+	var _is = __webpack_require__(4);
+
+	/**
+	 * Validate if model is compatible with schema
+	 * @param  {Object} model  model object
+	 * @param  {Object} schema schema object
+	 * @return {Array} errors  if during validation have errors, then push all to array
+	 */
+	var validateModel = exports.validateModel = function validateModel(model, schema) {
+
+	    var validators = _validators.VALIDATORS,
+	        errors = [];
+
+	    /**
+	     * Validate properties from model
+	     */
+	    for (var prop_model in model) {
+	        if (!schema.hasOwnProperty(prop_model)) {
+	            errors.push(prop_model + ' is not a valid property in your Model');
+	        }
+	    }
+
+	    for (var prop_schema in schema) {
+	        if (model.hasOwnProperty(prop_schema)) {
+	            var prop_type = schema[prop_schema].type;
+	            if (!_is.is.Undefined(prop_type)) {
+
+	                if (model[prop_schema].constructor.name !== prop_type.name) {
+	                    errors.push(prop_schema + ' is not a ' + prop_type.name);
+	                }
+
+	                var _iteratorNormalCompletion = true;
+	                var _didIteratorError = false;
+	                var _iteratorError = undefined;
+
+	                try {
+	                    for (var _iterator = validators[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                        var validator = _step.value;
+
+	                        var prop_validator = schema[prop_schema][validator];
+	                        if (!_is.is.Undefined(prop_validator)) {
+	                            switch (validator) {
+	                                case 'required':
+	                                    if (_is.is.Empty(model[prop_schema]) || _is.is.Null(model[prop_schema])) {
+	                                        errors.push(prop_schema + ' not be empty or null');
+	                                    }
+	                                    break;
+
+	                                case 'min':
+	                                    if (_is.is.Array(prop_validator)) {
+	                                        if (model[prop_schema] < prop_validator[0]) {
+	                                            if (!_is.is.Undefined(prop_validator[1])) {
+	                                                errors.push('' + prop_validator[1]);
+	                                            } else {
+	                                                errors.push(prop_schema + ' not be less than ' + prop_validator[0]);
+	                                            }
+	                                        }
+	                                    } else {
+	                                        if (model[prop_schema] < prop_validator) {
+	                                            errors.push(prop_schema + ' not be less than ' + prop_validator);
+	                                        }
+	                                    }
+	                                    break;
+
+	                                case 'max':
+	                                    if (_is.is.Array(prop_validator)) {
+	                                        if (model[prop_schema] > prop_validator[0]) {
+	                                            if (!_is.is.Undefined(prop_validator[1])) {
+	                                                errors.push('' + prop_validator[1]);
+	                                            } else {
+	                                                errors.push(prop_schema + ' not be grater than ' + prop_validator[0]);
+	                                            }
+	                                        }
+	                                    } else {
+	                                        if (model[prop_schema] > prop_validator) {
+	                                            errors.push(prop_schema + ' not be less grater ' + prop_validator);
+	                                        }
+	                                    }
+	                                    break;
+
+	                            }
+	                        }
+	                    }
+	                } catch (err) {
+	                    _didIteratorError = true;
+	                    _iteratorError = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion && _iterator.return) {
+	                            _iterator.return();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError) {
+	                            throw _iteratorError;
+	                        }
+	                    }
+	                }
+	            } else {
+
+	                if (model[prop_schema].constructor.name !== schema[prop_schema].name) {
+	                    errors.push(prop_schema + ' is not a ' + schema[prop_schema].name);
+	                }
+	            }
+	        } else {
+
+	            var default_value = schema[prop_schema].default;
+
+	            if (!_is.is.Undefined(default_value)) {
+	                model[prop_schema] = default_value;
+	            } else {
+	                model[prop_schema] = null;
+	            }
+	        }
+	    }
+
+	    return errors;
+	};
 
 /***/ }
 /******/ ]);
