@@ -23,13 +23,14 @@ export default class LocalStorage {
         table_name = pluralize(table_name);
 
         if ( localStorage.getItem(table_name) === null ) {
-            /**
-             * Create a new item on storage
-             * with a empty value
-             */
             if ( initial_data ) {
-                localStorage.setItem(table_name, JSON.stringify([initial_data]));
+                let data = new Array(initial_data);
+                localStorage.setItem(table_name, JSON.stringify(data));
             } else {
+                /**
+                 * Create a new item on storage
+                 * with a empty value
+                 */
                 localStorage.setItem(table_name, "");
             }
         }
@@ -52,6 +53,11 @@ export default class LocalStorage {
      */
     static get( table_name ) {
         table_name = pluralize(table_name);
+
+        if ( !this.tableExists(table_name) ) {
+            throw Error(`Could not find the table "${table_name}"`);
+        }
+
         return localStorage.getItem(table_name);
     }
 
@@ -62,11 +68,24 @@ export default class LocalStorage {
      */
     static set( table_name, data ) {
         table_name = pluralize(table_name);
-        localStorage.setItem(table_name, JSON.stringify([data]));
+
+        if ( !this.tableExists(table_name) ) {
+            throw Error(`Could not find the table "${table_name}"`);
+        }
+
+        localStorage.setItem(table_name, JSON.stringify(data));
     }
 
+    /**
+     * Add a new data into a existent table => @var table_name
+     * @param  {String} table_name
+     * @param  {Object} data
+     */
     static push( table_name, data ) {
+        let results = JSON.parse(this.get(pluralize(table_name)));
+        results.push(data);
 
+        this.set(table_name, results);
     }
 
 }
