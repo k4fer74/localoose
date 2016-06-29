@@ -11,7 +11,11 @@ export default class ObjectId {
             uuid.push(this.generateUUID);
         }
 
-        return uuid.toString.replace(",", "");
+        let UUID = uuid.toString().replace(/,/g, "");
+
+        return {
+            UUID: UUID
+        };
     }
 
     get generateUUID() {
