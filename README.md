@@ -127,12 +127,24 @@ MyModel.save(function( err, my_model ) {
 });
 ```
 
-### find();
+### findAll();
+Return all data from the model storaged on localStorage
 
-### findById();
+```javascript
+MyModel.findAll(function( err, result ) {
+    if ( err )
+        console.error(err);
+    else
+        console.log('All results', result);
+});
+```
 
-### update();
+### ~~find()~~;
 
-### findOne();
+### ~~findById()~~;
 
-### delete();
+### ~~update()~~;
+
+### ~~findOne()~~;
+
+### ~~delete()~~;
