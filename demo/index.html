@@ -46,9 +46,15 @@
 
             User.save(function( err, user ) {
                 if ( err )
-                    console.log(err)
+                    console.log(err);
             });
 
+            User.findAll(function( err, users ) {
+                if ( err )
+                    console.log(err);
+                else
+                    console.log(users);
+            });
 
 		</script>
 
