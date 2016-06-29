@@ -145,6 +145,10 @@
 
 	var _query2 = _interopRequireDefault(_query);
 
+	var _localStorage = __webpack_require__(7);
+
+	var _localStorage2 = _interopRequireDefault(_localStorage);
+
 	var _genericValidations = __webpack_require__(10);
 
 	var _is = __webpack_require__(4);
@@ -185,6 +189,10 @@
 	    _createClass(Model, [{
 	        key: 'save',
 	        value: function save(callback) {
+	            if (!_is.is.Function(callback)) {
+	                throw TypeError("The save() arg must be a function");
+	            }
+
 	            var validate_errors = (0, _genericValidations.validateModel)(this.model_data, this.schema);
 
 	            if (validate_errors.length > 0) {
@@ -198,6 +206,20 @@
 	                 * Update callback
 	                 */
 	                callback(null, this.model_data);
+	            }
+	        }
+	    }, {
+	        key: 'findAll',
+	        value: function findAll(callback) {
+	            if (!_is.is.Function(callback)) {
+	                throw TypeError("The save() arg must be a function");
+	            }
+
+	            try {
+	                var result = JSON.parse(_localStorage2.default.get(this.model_name));
+	                callback(false, result);
+	            } catch (err) {
+	                callback(err, null);
 	            }
 	        }
 	    }], [{
@@ -531,12 +553,23 @@
 	         * @param  {Object} data  Object data to persist
 	         */
 	        value: function save(table_name, data) {
+	            /**
+	             * Check if the data have a ID property,
+	             * if no, then create new ID with UUID
+	             * @type {Boolean}
+	             */
+	            var has_id = data.hasOwnProperty("id");
+	            if (!has_id) {
+	                data.id = new _objectId2.default().UUID;
+	            }
+
 	            if (!_localStorage2.default.tableExists(table_name)) {
 	                _localStorage2.default.newTable(table_name, data);
 	            } else {
 	                /**
 	                 * The table exists, then PUSH data into table
 	                 */
+	                _localStorage2.default.push(table_name, data);
 	            }
 	        }
 	    }]);
@@ -593,13 +626,14 @@
 	            table_name = pluralize(table_name);
 
 	            if (localStorage.getItem(table_name) === null) {
-	                /**
-	                 * Create a new item on storage
-	                 * with a empty value
-	                 */
 	                if (initial_data) {
-	                    localStorage.setItem(table_name, JSON.stringify([initial_data]));
+	                    var data = new Array(initial_data);
+	                    localStorage.setItem(table_name, JSON.stringify(data));
 	                } else {
+	                    /**
+	                     * Create a new item on storage
+	                     * with a empty value
+	                     */
 	                    localStorage.setItem(table_name, "");
 	                }
 	            }
@@ -628,6 +662,11 @@
 	        key: "get",
 	        value: function get(table_name) {
 	            table_name = pluralize(table_name);
+
+	            if (!this.tableExists(table_name)) {
+	                throw Error("Could not find the table \"" + table_name + "\"");
+	            }
+
 	            return localStorage.getItem(table_name);
 	        }
 
@@ -641,11 +680,28 @@
 	        key: "set",
 	        value: function set(table_name, data) {
 	            table_name = pluralize(table_name);
-	            localStorage.setItem(table_name, JSON.stringify([data]));
+
+	            if (!this.tableExists(table_name)) {
+	                throw Error("Could not find the table \"" + table_name + "\"");
+	            }
+
+	            localStorage.setItem(table_name, JSON.stringify(data));
 	        }
+
+	        /**
+	         * Add a new data into a existent table => @var table_name
+	         * @param  {String} table_name
+	         * @param  {Object} data
+	         */
+
 	    }, {
 	        key: "push",
-	        value: function push(table_name, data) {}
+	        value: function push(table_name, data) {
+	            var results = JSON.parse(this.get(pluralize(table_name)));
+	            results.push(data);
+
+	            this.set(table_name, results);
+	        }
 	    }]);
 
 	    return LocalStorage;
@@ -1144,7 +1200,11 @@
 	            uuid.push(this.generateUUID);
 	        }
 
-	        return uuid.toString.replace(",", "");
+	        var UUID = uuid.toString().replace(/,/g, "");
+
+	        return {
+	            UUID: UUID
+	        };
 	    }
 
 	    _createClass(ObjectId, [{
