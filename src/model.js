@@ -1,5 +1,6 @@
 import Schema from './schema';
 import Query from './query';
+import localStorage from './localStorage'
 
 import { validateModel } from './genericValidations';
 import { is } from './is';
@@ -35,6 +36,10 @@ export default class Model {
     }
 
     save( callback ) {
+        if ( !is.Function(callback) ) {
+            throw TypeError("The save() arg must be a function");
+        }
+
         let validate_errors = validateModel( this.model_data, this.schema );
 
         if ( validate_errors.length > 0 ) {
@@ -50,6 +55,19 @@ export default class Model {
             callback(null, this.model_data);
         }
 
+    }
+
+    findAll( callback ) {
+        if ( !is.Function(callback) ) {
+            throw TypeError("The save() arg must be a function");
+        }
+
+        try {
+            let result = JSON.parse(localStorage.get(this.model_name))
+            callback(false, result);
+        } catch( err ) {
+            callback(err, null);
+        }
     }
 
 }
