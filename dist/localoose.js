@@ -188,6 +188,12 @@
 
 	    _createClass(Model, [{
 	        key: 'save',
+
+
+	        /**
+	         * Save model
+	         * @param  {Function} callback
+	         */
 	        value: function save(callback) {
 	            if (!_is.is.Function(callback)) {
 	                throw TypeError("The save() arg must be a function");
@@ -208,6 +214,11 @@
 	                callback(null, this.model_data);
 	            }
 	        }
+
+	        /**
+	         * @param  {Function} callback
+	         */
+
 	    }, {
 	        key: 'findAll',
 	        value: function findAll(callback) {
@@ -220,6 +231,53 @@
 	                callback(false, result);
 	            } catch (err) {
 	                callback(err, null);
+	            }
+	        }
+
+	        /**
+	         * Return data based on id parameter
+	         * @param  {String}   id       UUID
+	         * @param  {Function} callback
+	         */
+
+	    }, {
+	        key: 'findById',
+	        value: function findById(id, callback) {
+	            if (!_is.is.Function(callback)) {
+	                throw TypeError("The save() arg must be a function");
+	            }
+
+	            try {
+	                var data = JSON.parse(_localStorage2.default.get(this.model_name));
+	                var search = data.find(function (data) {
+	                    return data.id === id;
+	                });
+
+	                if (_is.is.Undefined(search)) {
+	                    throw 'Not result for id: ' + id;
+	                }
+
+	                callback(false, search);
+	            } catch (err) {
+	                callback(err, null);
+	            }
+	        }
+
+	        /**
+	         * Find data based on object condition parameter
+	         * @param  {Object}   condition
+	         * @param  {Function} callback
+	         */
+
+	    }, {
+	        key: 'find',
+	        value: function find(condition, callback) {
+	            if (!_is.is.Function(callback)) {
+	                throw TypeError("The save() arg must be a function");
+	            }
+
+	            if (!_is.is.Object(condition)) {
+	                throw TypeError("The condition arg must be a object");
 	            }
 	        }
 	    }], [{
