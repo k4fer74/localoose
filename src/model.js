@@ -35,6 +35,10 @@ export default class Model {
         return Model;
     }
 
+    /**
+     * Save model
+     * @param  {Function} callback
+     */
     save( callback ) {
         if ( !is.Function(callback) ) {
             throw TypeError("The save() arg must be a function");
@@ -57,6 +61,9 @@ export default class Model {
 
     }
 
+    /**
+     * @param  {Function} callback
+     */
     findAll( callback ) {
         if ( !is.Function(callback) ) {
             throw TypeError("The save() arg must be a function");
@@ -67,6 +74,47 @@ export default class Model {
             callback(false, result);
         } catch( err ) {
             callback(err, null);
+        }
+    }
+
+    /**
+     * Return data based on id parameter
+     * @param  {String}   id       UUID
+     * @param  {Function} callback
+     */
+    findById( id, callback ) {
+        if ( !is.Function(callback) ) {
+            throw TypeError("The save() arg must be a function");
+        }
+
+        try {
+            let data = JSON.parse(localStorage.get(this.model_name));
+            let search = data.find(function( data ) {
+                return data.id === id;
+            });
+
+            if ( is.Undefined(search) ) {
+                throw `Not result for id: ${id}`;
+            }
+
+            callback(false, search);
+        } catch ( err ) {
+            callback(err, null);
+        }
+    }
+
+    /**
+     * Find data based on object condition parameter
+     * @param  {Object}   condition
+     * @param  {Function} callback
+     */
+    find( condition, callback ) {
+        if ( !is.Function(callback) ) {
+            throw TypeError("The save() arg must be a function");
+        }
+
+        if ( !is.Object(condition) ) {
+            throw TypeError("The condition arg must be a object");
         }
     }
 
