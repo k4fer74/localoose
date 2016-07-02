@@ -116,6 +116,7 @@ localoose.Schema({
 ## Methods
 
 ### save();
+`save([callback(err, model)]);`
 Persists the model on localStorage
 
 ```javascript
@@ -128,6 +129,7 @@ MyModel.save(function( err, my_model ) {
 ```
 
 ### findAll();
+`findAll([callback(err, result)]);`
 Return all data from the model storaged on localStorage
 
 ```javascript
@@ -139,12 +141,22 @@ MyModel.findAll(function( err, result ) {
 });
 ```
 
-### ~~find()~~;
+### findById();
+`findById([id], [callback(err, found)]);`
+Return one data based on id parameter
 
-### ~~findById()~~;
+### ~~find()~~;
+~~`find([condition], [callback(err, found)]);` return data based on object condition parameter~~
 
 ### ~~update()~~;
 
 ### ~~findOne()~~;
 
 ### ~~delete()~~;
+
+## Todo
+* find()
+* update()
+* findOne()
+* delete()
+* Tests
