@@ -38,22 +38,29 @@
             var user_model = localoose.Model('User', user_schema);
 
             var User = new user_model({
-                name: 'John Snow',
+                name: 'Loure Porius',
                 address: 'NY, United States',
                 birthday: new Date(1996, 4, 20),
                 gifts: 3,
             });
 
-            User.save(function( err, user ) {
+            /*User.save(function( err, user ) {
                 if ( err )
                     console.log(err);
-            });
+            });*/
 
             User.findAll(function( err, users ) {
                 if ( err )
                     console.log(err);
                 else
                     console.log(users);
+            });
+
+            User.findById('5da1765bd9845e5680551d8aa4a61a43', function( err, found ) {
+                if ( err )
+                    console.error(err);
+                else
+                    console.log(found.name);
             });
 
 		</script>
