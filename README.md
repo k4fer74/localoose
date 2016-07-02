@@ -144,6 +144,14 @@ MyModel.findAll(function( err, result ) {
 ### findById();
 `findById([id], [callback(err, found)]);`
 Return one data based on id parameter
+```javascript
+User.findById(id, function( err, found ) {
+    if ( err )
+        console.error(err);
+    else
+        console.log(found.name);
+});
+```
 
 ### ~~find()~~;
 ~~`find([condition], [callback(err, found)]);` return data based on object condition parameter~~
