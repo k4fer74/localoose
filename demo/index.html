@@ -49,18 +49,25 @@
                     console.log(err);
             });*/
 
-            User.findAll(function( err, users ) {
+            /*User.findAll(function( err, users ) {
                 if ( err )
                     console.log(err);
                 else
                     console.log(users);
-            });
+            });*/
 
-            User.findById('5da1765bd9845e5680551d8aa4a61a43', function( err, found ) {
+            /*User.findById('5da1765bd9845e5680551d8aa4a61a43', function( err, found ) {
                 if ( err )
                     console.error(err);
                 else
                     console.log(found.name);
+            });*/
+
+            User.find({ name: 'Loure Porius' }, function( err, found ) {
+                if ( err )
+                    console.error(err);
+                else
+                    console.log(found);
             });
 
 		</script>
