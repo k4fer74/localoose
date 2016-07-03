@@ -122,7 +122,7 @@ Persists the model on localStorage
 ```javascript
 MyModel.save(function( err, my_model ) {
     if ( err )
-        console.log(err);
+        console.error(err);
     else
         console.info('Saved!', my_model);    
 });
@@ -145,7 +145,7 @@ MyModel.findAll(function( err, result ) {
 `findById([id], [callback(err, found)]);`
 Return one data based on id parameter
 ```javascript
-User.findById(id, function( err, found ) {
+MyModel.findById(id, function( err, found ) {
     if ( err )
         console.error(err);
     else
@@ -153,8 +153,16 @@ User.findById(id, function( err, found ) {
 });
 ```
 
-### ~~find()~~;
-~~`find([condition], [callback(err, found)]);` return data based on object condition parameter~~
+### find();
+`find([conditions], [callback(err, found)]);` return data based on object condition parameter
+```javascript
+MyModel.find({ age: 18 }, function( err, found ) {
+    if ( err )
+        console.error(err);
+    else
+        console.log(found);
+});
+```
 
 ### ~~update()~~;
 
@@ -163,7 +171,7 @@ User.findById(id, function( err, found ) {
 ### ~~delete()~~;
 
 ## Todo
-* find()
+* ~~find()~~
 * update()
 * findOne()
 * delete()
