@@ -174,8 +174,6 @@
 	        this.model_data = model_data;
 	        this.model_name = Model.prototype.model_name;
 	        this.schema = Model.prototype.schema;
-
-	        console.log(this);
 	    }
 
 	    /**
@@ -264,20 +262,49 @@
 	        }
 
 	        /**
-	         * Find data based on object condition parameter
-	         * @param  {Object}   condition
+	         * Find data based on object conditions parameter
+	         * @param  {Object}   conditions
 	         * @param  {Function} callback
+	         * @return {Array} result result found based on conditions
 	         */
 
 	    }, {
 	        key: 'find',
-	        value: function find(condition, callback) {
+	        value: function find(conditions, callback) {
 	            if (!_is.is.Function(callback)) {
-	                throw TypeError("The save() arg must be a function");
+	                throw TypeError("The callback() arg must be a function");
 	            }
 
-	            if (!_is.is.Object(condition)) {
-	                throw TypeError("The condition arg must be a object");
+	            if (!_is.is.Object(conditions)) {
+	                throw TypeError("The conditions arg must be a object");
+	            }
+
+	            try {
+	                var data = JSON.parse(_localStorage2.default.get(this.model_name)),
+	                    result = [],
+	                    i = 0;
+
+	                for (i; i < data.length; i++) {
+	                    var conditions_length = Object.keys(conditions).length;
+
+	                    for (var condition in conditions) {
+	                        if (data[i].hasOwnProperty(condition) && data[i][condition] == conditions[condition]) {
+	                            conditions_length--;
+	                        }
+	                    }
+
+	                    if (conditions_length === 0) {
+	                        result.push(data[i]);
+	                    }
+	                }
+
+	                if (result.length === 0) {
+	                    throw 'Not results found on find()';
+	                }
+
+	                callback(false, result);
+	            } catch (err) {
+	                callback(err, null);
 	            }
 	        }
 	    }], [{
