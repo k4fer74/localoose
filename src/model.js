@@ -68,8 +68,10 @@ export default class Model {
         }
 
         try {
+
             let result = JSON.parse(localStorage.get(this.model_name))
             callback(false, result);
+
         } catch( err ) {
             callback(err, null);
         }
@@ -86,6 +88,7 @@ export default class Model {
         }
 
         try {
+
             let data = JSON.parse(localStorage.get(this.model_name));
             let search = data.find(function( data ) {
                 return data.id === id;
@@ -117,6 +120,7 @@ export default class Model {
         }
 
         try {
+
             let data = JSON.parse(localStorage.get(this.model_name))
               , result = []
               , i = 0;
@@ -136,12 +140,49 @@ export default class Model {
             }
 
             if ( result.length === 0 ) {
-                throw (`Not results found on find()`);
+                throw(`Not results found on find()`);
             }
 
             callback(false, result);
         } catch( err ) {
             callback(err, null);
+        }
+    }
+
+    /**
+     * Delete data using id field
+     * @param  {String}   id
+     * @param  {Function} callback
+     */
+    delete( id, callback ) {
+        if ( !is.Function(callback) ) {
+            throw TypeError("The callback() arg must be a function");
+        }
+
+        if ( !is.String(id) ) {
+            throw TypeError("The id arg must be a valid string id");
+        }
+
+        try {
+
+            let data = JSON.parse(localStorage.get(this.model_name));
+
+            this.findById(id, ( err, found ) => {
+                if ( err ) {
+                    throw(`Id not found: ${id}. Not possible delete();`);
+                } else {
+                    data.forEach(( el, i, arr ) => {
+                        if ( data[i].id === id ) {
+                            data.splice(i, 1);
+                            localStorage.set(this.model_name, data);
+                        }
+                    });
+                }
+            });
+
+            callback(false);
+        } catch( err ) {
+            callback(err);
         }
     }
 
