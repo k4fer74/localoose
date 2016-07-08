@@ -8,7 +8,7 @@ Localoose is a simple localStorage Object Data Mapping (ODM)
 npm install <package>
 ```
 ### Install manually
-```
+```javascript
 <script src="path/to/localoose.js"></script>
 ```
 # Overview
@@ -164,15 +164,24 @@ MyModel.find({ age: 18 }, function( err, found ) {
 });
 ```
 
+### delete();
+`delete(id, [callback(err)]);` delete a data based on id parameter
+```javascript
+MyModel.delete('5da1765bd9845e5680551d8aa4a61a43', function( err ) {
+    if ( err )
+        console.error(err);
+    else
+        console.info('Deleted!');
+});
+```
+
 ### ~~update()~~;
 
 ### ~~findOne()~~;
 
-### ~~delete()~~;
-
 ## Todo
 * ~~find()~~
+* ~~delete()~~
 * update()
 * findOne()
-* delete()
 * Tests
