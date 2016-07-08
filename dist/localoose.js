@@ -225,6 +225,7 @@
 	            }
 
 	            try {
+
 	                var result = JSON.parse(_localStorage2.default.get(this.model_name));
 	                callback(false, result);
 	            } catch (err) {
@@ -246,6 +247,7 @@
 	            }
 
 	            try {
+
 	                var data = JSON.parse(_localStorage2.default.get(this.model_name));
 	                var search = data.find(function (data) {
 	                    return data.id === id;
@@ -280,6 +282,7 @@
 	            }
 
 	            try {
+
 	                var data = JSON.parse(_localStorage2.default.get(this.model_name)),
 	                    result = [],
 	                    i = 0;
@@ -305,6 +308,50 @@
 	                callback(false, result);
 	            } catch (err) {
 	                callback(err, null);
+	            }
+	        }
+
+	        /**
+	         * Delete data using id field
+	         * @param  {String}   id
+	         * @param  {Function} callback
+	         */
+
+	    }, {
+	        key: 'delete',
+	        value: function _delete(id, callback) {
+	            var _this = this;
+
+	            if (!_is.is.Function(callback)) {
+	                throw TypeError("The callback() arg must be a function");
+	            }
+
+	            if (!_is.is.String(id)) {
+	                throw TypeError("The id arg must be a valid string id");
+	            }
+
+	            try {
+	                (function () {
+
+	                    var data = JSON.parse(_localStorage2.default.get(_this.model_name));
+
+	                    _this.findById(id, function (err, found) {
+	                        if (err) {
+	                            throw 'Id not found: ' + id + '. Not possible delete();';
+	                        } else {
+	                            data.forEach(function (el, i, arr) {
+	                                if (data[i].id === id) {
+	                                    data.splice(i, 1);
+	                                    _localStorage2.default.set(_this.model_name, data);
+	                                }
+	                            });
+	                        }
+	                    });
+
+	                    callback(false);
+	                })();
+	            } catch (err) {
+	                callback(err);
 	            }
 	        }
 	    }], [{
