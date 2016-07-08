@@ -63,11 +63,18 @@
                     console.log(found.name);
             });*/
 
-            User.find({ name: 'Loure Porius' }, function( err, found ) {
+            /*User.find({ id: '5da1765bd9845e5680551d8aa4a61a43' }, function( err, found ) {
                 if ( err )
                     console.error(err);
                 else
                     console.log(found);
+            });*/
+
+            User.delete('5da1765bd9845e5680551d8aa4a61a43', function( err ) {
+                if ( err )
+                    console.error(err);
+                else
+                    console.info("Deleted!");
             });
 
 		</script>
