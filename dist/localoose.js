@@ -354,6 +354,68 @@
 	                callback(err);
 	            }
 	        }
+	    }, {
+	        key: 'update',
+	        value: function update(id, options, callback) {
+	            var _this2 = this;
+
+	            if (!_is.is.String(id)) {
+	                throw TypeError("The id arg must be a valid string id");
+	            }
+
+	            if (!_is.is.Object(options)) {
+	                throw TypeError("The options arg must be a valid object");
+	            }
+
+	            if (!_is.is.Function(callback)) {
+	                throw TypeError("The callback() arg must be a function");
+	            }
+
+	            var opts = {};
+
+	            for (var prop in options) {
+	                Object.defineProperty(opts, prop, {
+	                    value: options[prop],
+	                    writable: true,
+	                    enumerable: true,
+	                    configurable: true
+	                });
+	            }
+
+	            try {
+
+	                this.findById(id, function (err, found) {
+	                    if (err) {
+	                        throw err;
+	                    } else {
+	                        var errors = (0, _genericValidations.validateModel)(options, _this2.schema);
+	                        if (errors.length > 0) {
+	                            callback(errors);
+	                        } else {
+	                            (function () {
+	                                for (var _prop in opts) {
+	                                    found[_prop] = opts[_prop];
+	                                }
+
+	                                var data = JSON.parse(_localStorage2.default.get(_this2.model_name)),
+	                                    index_found = void 0;
+
+	                                data.forEach(function (el, i, arr) {
+	                                    if (data[i].id === id) {
+	                                        index_found = i;
+	                                    }
+	                                });
+
+	                                _localStorage2.default.update(_this2.model_name, index_found, found);
+	                                callback(false);
+	                            })();
+	                        }
+	                    }
+	                });
+	            } catch (err) {
+	                callback(err);
+	            }
+	        }
 	    }], [{
 	        key: 'initialize',
 	        value: function initialize(model_name, schema) {
@@ -831,6 +893,14 @@
 	        value: function push(table_name, data) {
 	            var results = JSON.parse(this.get(pluralize(table_name)));
 	            results.push(data);
+
+	            this.set(table_name, results);
+	        }
+	    }, {
+	        key: "update",
+	        value: function update(table_name, index, data) {
+	            var results = JSON.parse(this.get(pluralize(table_name)));
+	            results[index] = data;
 
 	            this.set(table_name, results);
 	        }
