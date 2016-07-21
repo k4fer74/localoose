@@ -70,11 +70,21 @@
                     console.log(found);
             });*/
 
-            User.delete('5da1765bd9845e5680551d8aa4a61a43', function( err ) {
+            /*User.delete('5da1765bd9845e5680551d8aa4a61a43', function( err ) {
                 if ( err )
                     console.error(err);
                 else
                     console.info("Deleted!");
+            });*/
+
+            User.update('6ccd533c8620001a7a0bd0946adabc79', {
+                name: 'John Not Snow',
+                active: true
+            }, function( err ) {
+                if ( err )
+                    console.error(err);
+                else
+                    console.info('Updated!');
             });
 
 		</script>
