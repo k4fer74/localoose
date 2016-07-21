@@ -186,4 +186,74 @@ export default class Model {
         }
     }
 
+    /**
+     * Update existent data
+     * @param  {String}   id
+     * @param  {Object}   options
+     * @param  {Function} callback
+     */
+    update( id, options, callback ) {
+
+        if ( !is.String(id) ) {
+            throw TypeError("The id arg must be a valid string id");
+        }
+
+        if ( !is.Object(options) ) {
+            throw TypeError("The options arg must be a valid object");
+        }
+
+        if ( !is.Function(callback) ) {
+            throw TypeError("The callback() arg must be a function");
+        }
+
+        let opts = {};
+
+        for ( let prop in options ) {
+            Object.defineProperty(opts, prop, {
+                value: options[prop],
+                writable: true,
+                enumerable: true,
+                configurable: true
+            });
+        }
+
+        try {
+
+            this.findById(id, ( err, found ) => {
+                if ( err ) {
+                    throw(err);
+                }
+
+                else {
+                    let errors = validateModel(options, this.schema);
+                    if ( errors.length > 0 ) {
+                        callback(errors);
+                    }
+
+                    else {
+                        for ( let prop in opts ) {
+                            found[prop] = opts[prop];
+                        }
+
+                        let data = JSON.parse(localStorage.get(this.model_name))
+                          , index_found;
+
+                        data.forEach(( el, i, arr ) => {
+                            if ( data[i].id === id ) {
+                                index_found = i;
+                            }
+                        });
+
+                        localStorage.update(this.model_name, index_found, found);
+                        callback(false);
+                    }
+                }
+            });
+
+        } catch ( err ) {
+            callback(err);
+        }
+
+    }
+
 }
