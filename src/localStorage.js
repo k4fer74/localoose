@@ -88,4 +88,11 @@ export default class LocalStorage {
         this.set(table_name, results);
     }
 
+    static update( table_name, index, data ) {
+        let results = JSON.parse(this.get(pluralize(table_name)));
+        results[index] = data;
+
+        this.set(table_name, results);
+    }
+
 }
