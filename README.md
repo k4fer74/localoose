@@ -175,13 +175,25 @@ MyModel.delete('5da1765bd9845e5680551d8aa4a61a43', function( err ) {
 });
 ```
 
-### ~~update()~~;
+### update();
+`update(id, [options], [callback(err)]);` update a data based on id and options object
+```javascript
+MyModel.update('5da1765bd9845e5680551d8aa4a61a43', {
+    name: 'John Travolta',
+    age: 62
+}, function( err ) {
+    if ( err )
+        console.error(err);
+    else
+        console.info('Updated!');
+});
+```
 
 ### ~~findOne()~~;
 
 ## Todo
 * ~~find()~~
 * ~~delete()~~
-* update()
+* ~~update()~~
 * findOne()
 * Tests
