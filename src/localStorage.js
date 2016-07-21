@@ -88,6 +88,12 @@ export default class LocalStorage {
         this.set(table_name, results);
     }
 
+    /**
+     * Update data into a existent table
+     * @param  {String} table_name
+     * @param  {Int} index
+     * @param  {Object} data
+     */
     static update( table_name, index, data ) {
         let results = JSON.parse(this.get(pluralize(table_name)));
         results[index] = data;
