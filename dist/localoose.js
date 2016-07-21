@@ -354,6 +354,14 @@
 	                callback(err);
 	            }
 	        }
+
+	        /**
+	         * Update existent data
+	         * @param  {String}   id
+	         * @param  {Object}   options
+	         * @param  {Function} callback
+	         */
+
 	    }, {
 	        key: 'update',
 	        value: function update(id, options, callback) {
@@ -896,6 +904,14 @@
 
 	            this.set(table_name, results);
 	        }
+
+	        /**
+	         * Update data into a existent table
+	         * @param  {String} table_name
+	         * @param  {Int} index
+	         * @param  {Object} data
+	         */
+
 	    }, {
 	        key: "update",
 	        value: function update(table_name, index, data) {
